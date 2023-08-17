@@ -1,0 +1,140 @@
+substitutions:
+  device_name: energy-monitor
+  project_version: "1.0.5"
+  device_description: "Мониторинг сети 220"
+dashboard_import:
+  package_import_url: github://darkness0808/energy-monitor/energy-monitor.yaml@main
+esphome:
+  name: '${device_name}'
+  comment: '${device_description}'
+  friendly_name: 'Energy monitor'
+  project:
+    name: "darkness0808.esp-monitor"
+    version: "${project_version}"
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+# Enable logging
+logger:
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "bmJVfSILgdos0W2/GcL89onOxUqxTHx0Ozml2M4jPJw="
+
+ota:
+  password: "00560c765689c0445fc168af82dd8dda"
+
+wifi:
+  ssid: darkness_wifi
+  password: TTQS28EP0L443ALG6H3ZTCU8B0
+
+captive_portal:
+
+web_server:
+  port: 80
+
+uart:
+  id: energomonitor_uart
+  rx_pin: GPIO16
+  tx_pin: GPIO17
+  baud_rate: 9600
+button:
+  - platform: restart
+    name: "Restart - Energy_monitor"
+sensor:
+  - platform: pzemac
+    current:
+      name: "Current L1"
+    voltage:
+      name: "Voltage L1"
+    energy:
+      name: "Energy L1"
+    power:
+      name: "Power L1"
+      id: Power_monitor_1
+    frequency:
+      name: "Frequency L1"
+    power_factor:
+      name: "Power factor L1"
+    update_interval: 3s
+    address: 1
+
+  - platform: pzemac
+    current:
+      name: "Current L2"
+    voltage:
+      name: "Voltage L2"
+    energy:
+      name: "Energy L2"
+    power:
+      name: "Power L2"
+      id: Power_monitor_2
+    frequency:
+      name: "Frequency L2"
+    power_factor:
+      name: "Power factor L2"
+    update_interval: 3s
+    address: 2
+
+  - platform: pzemac
+    current:
+      name: "Current L3"
+    voltage:
+      name: "Voltage L3"
+    energy:
+      name: "Energy L3"
+    power:
+      name: "Power L3"
+      id: Power_monitor_3
+    frequency:
+      name: "Frequency L3"
+    power_factor:
+      name: "Power factor L3"
+    update_interval: 3s
+    address: 3
+  
+  - platform: total_daily_energy
+    name: Total daily energy L1
+    power_id: Power_monitor_1
+    filters:
+      - multiply: 0.001
+    accuracy_decimals: 2
+    unit_of_measurement: kW
+    icon: mdi:counter
+
+  - platform: total_daily_energy
+    name: Total daily energy L2
+    power_id: Power_monitor_2
+    filters:
+      - multiply: 0.001
+    accuracy_decimals: 2
+    unit_of_measurement: kW
+    icon: mdi:counter
+
+  - platform: total_daily_energy
+    name: Total daily energy L3
+    power_id: Power_monitor_3
+    filters:
+      - multiply: 0.001
+    accuracy_decimals: 2
+    unit_of_measurement: kW
+    icon: mdi:counter
+
+time:
+  - platform: homeassistant
+    id: hass_time
+
+switch:
+  - platform: uart
+    uart_id: energomonitor_uart
+    name: "Energy Reset L1"
+    data: [0x01, 0x42, 0x80, 0x11]
+  - platform: uart
+    uart_id: energomonitor_uart
+    name: "Energy Reset L2"
+    data: [0x02, 0x42, 0x80, 0xE1]
+  - platform: uart
+    uart_id: energomonitor_uart
+    name: "Energy Reset L3"
+    data: [0x03, 0x42, 0x81, 0x71]
